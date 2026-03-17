@@ -1,0 +1,28 @@
+[project]
+name = "ai-engineering-cource"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "azure-core>=1.38.3",
+    "azure-identity>=1.25.3",
+    "en-core-web-lg",
+    "fastapi>=0.135.1",
+    "httpx>=0.28.1",
+    "langchain>=1.2.12",
+    "langchain-openai>=1.1.11",
+    "langchain-postgres>=0.0.13",
+    "langgraph>=1.1.2",
+    "pgvector>=0.2.5,<0.4",
+    "presidio-analyzer>=2.2.362",
+    "psycopg2-binary>=2.9.11",
+    "python-dotenv>=1.2.2",
+    "ragas>=0.4.3",
+    "spacy>=3.8.11",
+    "sqlalchemy>=2.0.48",
+    "uvicorn>=0.42.0",
+]
+
+[tool.uv.sources]
+en-core-web-lg = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl" }

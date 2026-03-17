@@ -1,0 +1,44 @@
+{
+  "park_info_docs": [
+    {
+      "content": "Parking lot name: CityPark Central. Located at 15 Main Street, downtown area. Open 24/7, all year round including public holidays.",
+      "metadata": {"category": "general", "topic": "location"}
+    },
+    {
+      "content": "Working hours: The parking lot is open 24 hours a day, 7 days a week. Staffed reception is available from 07:00 to 22:00. Outside these hours access is provided via automated entry system using your booking code.",
+      "metadata": {"category": "hours", "topic": "working_hours"}
+    },
+    {
+      "content": "Parking rates: Standard car — 2 USD/hour or 15 USD/day. SUV and minivan — 2.5 USD/hour or 18 USD/day. Motorcycle — 1 USD/hour or 8 USD/day. Monthly subscription available: 200 USD/month for standard, 250 USD/month for SUV.",
+      "metadata": {"category": "pricing", "topic": "rates"}
+    },
+    {
+      "content": "Availability: Total capacity is 200 parking spaces. 150 standard spaces, 30 spaces for SUVs and minivans, 10 spaces for motorcycles, 10 spaces reserved for people with disabilities (accessible parking). Real-time availability is updated every 5 minutes.",
+      "metadata": {"category": "availability", "topic": "capacity"}
+    },
+    {
+      "content": "Location and directions: CityPark Central is located at 15 Main Street, downtown. Nearest metro station: Central Station (5 min walk). Bus stops: lines 12, 34, 56 stop directly outside. GPS coordinates: 50.4501° N, 30.5234° E.",
+      "metadata": {"category": "general", "topic": "directions"}
+    },
+    {
+      "content": "Reservation process: To book a parking space you need to provide your full name, car license plate number, arrival date and time, and departure date and time. Reservations can be made up to 30 days in advance. Minimum booking duration is 1 hour.",
+      "metadata": {"category": "booking", "topic": "reservation_process"}
+    },
+    {
+      "content": "Payment methods: Cash, all major credit and debit cards (Visa, MasterCard, American Express), contactless payments (Apple Pay, Google Pay), and bank transfers for monthly subscriptions. Payment is collected upon exit or at the time of online booking.",
+      "metadata": {"category": "payment", "topic": "payment_methods"}
+    },
+    {
+      "content": "Security and safety: The parking lot is equipped with 24/7 CCTV surveillance covering all areas. Security personnel patrol the premises from 07:00 to 22:00. The facility is well-lit throughout. Emergency call buttons are located every 30 meters.",
+      "metadata": {"category": "security", "topic": "safety"}
+    },
+    {
+      "content": "Additional services: EV charging stations available (8 stations, Type 2 and CCS connectors). Car wash service available Mon–Sat 08:00–20:00, starting from 10 USD. Free luggage trolleys near the elevators. Restrooms on every floor.",
+      "metadata": {"category": "services", "topic": "additional_services"}
+    },
+    {
+      "content": "Cancellation policy: Free cancellation up to 2 hours before the reserved arrival time. Cancellations within 2 hours incur a fee equal to 1 hour of parking. No-shows are charged the full first day rate. To cancel, contact reception or use the chatbot.",
+      "metadata": {"category": "booking", "topic": "cancellation"}
+    }
+  ]
+}
