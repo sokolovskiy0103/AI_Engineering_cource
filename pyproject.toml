@@ -21,6 +21,7 @@ dependencies = [
     "ragas>=0.4.3",
     "spacy>=3.8.11",
     "sqlalchemy>=2.0.48",
+    "streamlit>=1.45.0",
     "uvicorn>=0.42.0",
 ]
 

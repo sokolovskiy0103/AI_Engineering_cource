@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     azure_openai_api_version: str = Field("2024-02-01", alias="OPENAI_API_VERSION", validation_alias="OPENAI_API_VERSION")
     llm_model: str = "azure_openai:gpt-4.1-mini"
     embedding_model: str = "azure_openai:text-embedding-3-large"
+    api_base: str = "http://localhost:8000"
 
     model_config = SettingsConfigDict(
         env_file=".env",
