@@ -1,13 +1,16 @@
 # CityPark Central - Parking Lot Assistant
 
-An AI-powered chatbot for **CityPark Central** that answers questions about the parking facility and books reservations through a conversational interface.
+An AI-powered chatbot for **CityPark Central** that answers questions about the parking facility and books reservations through a conversational interface, with an admin approval workflow.
 
-Built with FastAPI, LangGraph agents, Azure OpenAI, and PostgreSQL with pgvector for RAG-based context retrieval.
+Built with FastAPI, LangGraph agents, Azure OpenAI, PostgreSQL with pgvector for RAG-based context retrieval, and Streamlit dashboards.
 
 ## Features
 
 - **Conversational Q&A** — answers questions about parking rates, hours, policies, and facilities using RAG over a knowledge base
-- **Reservation booking** — collects customer details through multi-turn conversation and creates bookings via a tool-calling agent
+- **Reservation booking with admin approval** — collects customer details through multi-turn conversation, submits reservations for administrator review before confirmation
+- **Admin dashboard** — Streamlit app for reviewing, approving, or refusing pending reservations via UI buttons or an admin chat agent
+- **User chat app** — Streamlit interface for end users to chat with the parking assistant
+- **Booking status checks** — users can ask the assistant about the current status of their reservations
 - **PII redaction** — automatically detects and redacts sensitive information (SSNs, credit cards, phone numbers, etc.) from responses using Presidio
 - **Session memory** — maintains conversation history per session for natural multi-turn interactions
 - **RAG evaluation** — offline evaluation pipeline using RAGAS metrics (context recall, precision, faithfulness, relevancy)
@@ -63,6 +66,16 @@ uv run uvicorn main:app --reload
 
 The API will be available at `http://localhost:8000`. On first startup, the knowledge base from `db/parking_data.json` is automatically embedded and seeded into the vector store.
 
+### 5. Run the Streamlit apps
+
+```bash
+# Admin dashboard (port 8501)
+uv run streamlit run admin_app.py
+
+# User chat app (port 8502)
+uv run streamlit run user_app.py --server.port 8502
+```
+
 ## API Usage
 
 ### `POST /chat`
@@ -88,13 +101,37 @@ Send a message and receive a response from the parking assistant.
 
 Use the same `session_id` across requests to maintain conversation context (e.g., for multi-step reservation booking).
 
+### Admin Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/admin/bookings/pending` | GET | List all bookings awaiting approval |
+| `/admin/bookings/{id}/approve` | POST | Approve a pending booking |
+| `/admin/bookings/{id}/refuse` | POST | Refuse a pending booking |
+| `/admin/chat` | POST | Chat with the admin agent |
+
+Approve/refuse endpoints accept an optional `admin_notes` field in the request body.
+
+## Booking Approval Workflow
+
+```
+User → Agent collects 5 fields → book_parking (status='pending_approval')
+  → User told "submitted for admin approval"
+  → User can ask "what's my booking status?" via check_booking_status tool
+
+Admin → Streamlit dashboard → Sees pending bookings (sidebar buttons + chat)
+  → Approves or refuses → DB updated to 'confirmed' or 'refused'
+```
+
 ## Project Structure
 
 ```
 .
-├── main.py                  # FastAPI app, /chat endpoint, LangGraph agent setup
+├── main.py                  # FastAPI app, /chat endpoint, admin endpoints, agents
 ├── config.py                # Pydantic Settings (Azure OpenAI config from .env)
 ├── guardrails.py            # PII redaction using Presidio
+├── admin_app.py             # Streamlit admin dashboard (Agent 2 + booking buttons)
+├── user_app.py              # Streamlit user chat interface
 ├── db/
 │   ├── database.py          # PostgreSQL connection, schema init, booking CRUD
 │   └── parking_data.json    # RAG knowledge base (parking info documents)
@@ -126,16 +163,24 @@ Results are printed to the console and saved to `evaluation/eval_results.json`.
 ## Architecture
 
 ```
-User → POST /chat → FastAPI
+User App (Streamlit :8502)
+  │
+  └─► POST /chat → FastAPI (:8000)
                        │
                        ├─ Similarity search (k=3) against pgvector
-                       │
-                       ├─ LangGraph agent with:
+                       ├─ LangGraph Agent 1:
                        │    ├─ System prompt + RAG context
-                       │    ├─ book_parking tool
+                       │    ├─ book_parking tool → DB (status='pending_approval')
+                       │    ├─ check_booking_status tool
                        │    └─ InMemorySaver (session state)
-                       │
                        ├─ PII redaction (Presidio)
-                       │
                        └─ Response → User
+
+Admin Dashboard (Streamlit :8501)
+  │
+  ├─► GET/POST /admin/* → Direct booking management
+  └─► POST /admin/chat → LangGraph Agent 2:
+                            ├─ list_pending_bookings tool
+                            ├─ approve_booking tool → DB (status='confirmed')
+                            └─ reject_booking tool → DB (status='refused')
 ```
