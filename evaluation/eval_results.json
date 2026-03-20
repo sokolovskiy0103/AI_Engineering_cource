@@ -1,0 +1,8 @@
+{
+  "ragas_metrics": {
+    "context_recall": 1.0,
+    "llm_context_precision_without_reference": 1.0,
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.9311
+  }
+}

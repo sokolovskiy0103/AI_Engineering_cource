@@ -1,0 +1,27 @@
+[
+  {
+    "question": "What are the parking rates for a standard car?",
+    "ground_truth": "Standard car parking costs 2 USD per hour or 15 USD per day. A monthly subscription is available for 200 USD per month.",
+    "expected_contexts": ["Standard car — 2 USD/hour or 15 USD/day", "200 USD/month for standard"]
+  },
+  {
+    "question": "What is the cancellation policy for a reservation?",
+    "ground_truth": "Free cancellation is available up to 2 hours before the reserved arrival time. Cancellations within 2 hours incur a fee equal to 1 hour of parking. No-shows are charged the full first day rate.",
+    "expected_contexts": ["Free cancellation up to 2 hours before the reserved arrival time", "No-shows are charged the full first day rate"]
+  },
+  {
+    "question": "Do you have EV charging stations available?",
+    "ground_truth": "Yes, there are 8 EV charging stations available with Type 2 and CCS connectors.",
+    "expected_contexts": ["EV charging stations available (8 stations, Type 2 and CCS connectors)"]
+  },
+  {
+    "question": "Where is CityPark Central located?",
+    "ground_truth": "CityPark Central is located at 15 Main Street, in the downtown area. The nearest metro station is Central Station, a 5 minute walk away.",
+    "expected_contexts": ["Located at 15 Main Street, downtown area", "Nearest metro station: Central Station (5 min walk)"]
+  },
+  {
+    "question": "How many parking spaces does the lot have?",
+    "ground_truth": "The parking lot has a total capacity of 200 spaces: 150 standard spaces, 30 for SUVs and minivans, 10 for motorcycles, and 10 accessible spaces reserved for people with disabilities.",
+    "expected_contexts": ["Total capacity is 200 parking spaces", "150 standard spaces, 30 spaces for SUVs"]
+  }
+]
