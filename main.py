@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
+from typing import Any
 
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
 from langchain.embeddings import init_embeddings
@@ -9,9 +10,11 @@ from langchain_postgres import PGVector
 from langchain_core.tools import tool
 from langgraph.checkpoint.memory import InMemorySaver
 from pydantic import BaseModel
+from starlette.requests import Request
 
 from config import settings
 from db.database import CONNECTION_STRING, init_db, load_seed_data, create_booking
+from guardrails import redact_pii
 
 
 class ChatRequest(BaseModel):
@@ -56,9 +59,27 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.post("/chat")
-async def chat(request: Request, body: ChatRequest):
-    docs = request.app.state.vectorstore.similarity_search(body.message, k=3)
-    context = "\n\n".join(doc.page_content for doc in docs)
+def chat(request: Request, body: ChatRequest):
+    answer, context = invoke(
+        message=body.message,
+        session_id=body.session_id,
+        vectorstore=request.app.state.vectorstore,
+        llm=request.app.state.llm,
+        checkpointer=request.app.state.checkpointer,
+    )
+
+    return {"answer": answer}
+
+
+def invoke(
+        message,
+        session_id,
+        vectorstore,
+        llm,
+        checkpointer = None
+) -> tuple[str, list[str]]:
+    docs = vectorstore.similarity_search(message, k=3)
+    context = [doc.page_content for doc in docs]
 
     @tool
     def book_parking(
@@ -78,7 +99,7 @@ async def chat(request: Request, body: ChatRequest):
             departure_time: Departure datetime in ISO-8601 format, e.g. 2026-03-18T17:00:00
         """
         return create_booking(
-            session_id=body.session_id,
+            session_id=session_id,
             first_name=first_name,
             last_name=last_name,
             license_plate=license_plate,
@@ -87,24 +108,24 @@ async def chat(request: Request, body: ChatRequest):
         )
 
     agent = create_agent(
-        model=request.app.state.llm,
+        model=llm,
         tools=[book_parking],
-        checkpointer=request.app.state.checkpointer,
+        checkpointer=checkpointer,
         system_prompt=(
             "You are a helpful parking lot assistant. "
             "Answer questions based only on the context below.\n\n"
             "When a user wants to make a reservation, collect the following details one by one: "
             "first name, last name, license plate number, arrival time, and departure time. "
             "Once you have ALL five pieces of information, call the book_parking tool.\n\n"
-            f"Context:\n{context}"
+            f"Context:\n{"\n\n".join(context)}"
         )
     )
 
     response = agent.invoke(
-        {"messages": [{"role": "user", "content": body.message}]},
-        {"configurable": {"thread_id": body.session_id}}
+        {"messages": [{"role": "user", "content": message}]},
+        {"configurable": {"thread_id": session_id}}
     )
 
     last_message = response["messages"][-1]
-
-    return {"answer": last_message.content}
+    answer = redact_pii(last_message.content)
+    return answer, context
